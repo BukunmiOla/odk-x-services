@@ -58,7 +58,27 @@ public class ODKScopedFileUtilsTest {
         context = ApplicationProvider.getApplicationContext();
         contentResolver = context.getContentResolver();
         contentValues = new ContentValues();
-        contentValues.put(MediaStore.Files.FileColumns.RELATIVE_PATH, ODK_FOLDER_NAME + PATH_SEPARATOR);
+//        createBaseFolder();
+    }
+
+    private void createBaseFolder() {
+        contentValues.put(MediaStore.Files.FileColumns.DISPLAY_NAME, "scoped_file.txt");
+        contentValues.put(MediaStore.Files.FileColumns.MIME_TYPE, "text/plain");
+        contentValues.put(MediaStore.Files.FileColumns.RELATIVE_PATH, "Documents/MyAppFolder/");
+        Uri folderUri = contentResolver.insert(
+                MediaStore.Files.getContentUri("external"),
+                contentValues
+        );
+        if (folderUri != null) {
+            try (OutputStream outputStream = contentResolver.openOutputStream(folderUri)) {
+                if (outputStream != null) {
+                    outputStream.write("content".getBytes());
+                    System.out.println("File Folder saved to scoped storage");
+                }
+            } catch (IOException e) {
+                System.out.println("Folder creation failed");
+            }
+        }
     }
 
     @Test
